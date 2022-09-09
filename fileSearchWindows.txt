@@ -1,0 +1,2 @@
+cd /
+dir *.jpg /s > unwantedFiles.txt

@@ -40,9 +40,11 @@ echo 4. Disable Guest
 echo 5. User Management
 echo 6. Create new User
 echo 7. Firewall
+echo 8. Admin Accounts
 REM ADD MORE LATER ---------------------------------------------------------
 
-CHOICE /c 1234567
+CHOICE /c 12345678
+if %errorlevel% == 8 goto Eight
 if %errorlevel% == 7 goto Seven
 if %errorlevel% == 6 goto Six
 if %errorLevel% == 5 goto Five
@@ -102,7 +104,11 @@ if %errorLevel% == 1 goto One
 	net accounts /lockoutthreshold:5
 	net accounts /lockoutduration:30
 	net accounts /lockoutwindow:10
-	echo Finished setting password policies.
+	echo Finished setting automatic password policies.
+
+	echo Secpol.msc will be started for manual process
+	start secpol.msc /wait
+	pause
 	exit /b 
 
 :Four
@@ -113,6 +119,7 @@ if %errorLevel% == 1 goto One
 	) else (
 		echo Guest account disabled
 	)
+	REM rename guest!!!!!!!!!
 	exit /b 
 :Five
 	echo Checking Current Users...
@@ -148,8 +155,13 @@ if %errorLevel% == 1 goto One
 		net user "%userName%" /active:no >nul
 		echo Disabled %userName%
 	) else (
-		net user "%userName%" CyberPatriot2022! /passwordreq:yes >nul
-		echo Updated %userName% password
+		if %username%==%userName% (
+			echo Didn't change %userName% password
+		)
+		else (
+			net user "%userName%" CyberPatriot2022! /passwordreq:yes >nul
+			echo Updated %userName% password
+		)
 	)
 	goto:eof
 
@@ -169,6 +181,89 @@ if %errorLevel% == 1 goto One
 :Seven
 	echo Enabling Firewall...
 	netsh advfirewall set allprofiles state on >nul
+	echo Firewall enabled.
+
+	netsh advfirewall firewall set rule name="Remote Assistance (DCOM-In)" new enable=no 
+	netsh advfirewall firewall set rule name="Remote Assistance (PNRP-In)" new enable=no 
+	netsh advfirewall firewall set rule name="Remote Assistance (RA Server TCP-In)" new enable=no 
+	netsh advfirewall firewall set rule name="Remote Assistance (SSDP TCP-In)" new enable=no 
+	netsh advfirewall firewall set rule name="Remote Assistance (SSDP UDP-In)" new enable=no 
+	netsh advfirewall firewall set rule name="Remote Assistance (TCP-In)" new enable=no 
+	netsh advfirewall firewall set rule name="Telnet Server" new enable=no 
+	netsh advfirewall firewall set rule name="netcat" new enable=no
+	echo Set basic firewall rules.
+
 	netsh advfirewall show allprofiles
 	pause
+	goto:eof
+
+:Eight
+	echo Checking Admin Accounts
+	REM might need to add some stuff here...
+	REM rename admin!!!!!!!
+	goto:eof
+
+:Nine
+	echo Checking Auditing Processes
+	auditpol /set /category:* /success:enable >nul
+	auditpol /set /category:* /failure:enable >nul
+	echo Auditing success and failures enabled
+	goto:eof
+:Ten
+	echo Checking Services
+	REM might need to add some stuff here...
+	REM event log service definately on
+	REM remote services based on README
+	dism /online /disable-feature /featurename:IIS-WebServerRole >NUL
+	dism /online /disable-feature /featurename:IIS-WebServer >NUL
+	dism /online /disable-feature /featurename:IIS-CommonHttpFeatures >NUL
+	dism /online /disable-feature /featurename:IIS-HttpErrors >NUL
+	dism /online /disable-feature /featurename:IIS-HttpRedirect >NUL
+	dism /online /disable-feature /featurename:IIS-ApplicationDevelopment >NUL
+	dism /online /disable-feature /featurename:IIS-NetFxExtensibility >NUL
+	dism /online /disable-feature /featurename:IIS-NetFxExtensibility45 >NUL
+	dism /online /disable-feature /featurename:IIS-HealthAndDiagnostics >NUL
+	dism /online /disable-feature /featurename:IIS-HttpLogging >NUL
+	dism /online /disable-feature /featurename:IIS-LoggingLibraries >NUL
+	dism /online /disable-feature /featurename:IIS-RequestMonitor >NUL
+	dism /online /disable-feature /featurename:IIS-HttpTracing >NUL
+	dism /online /disable-feature /featurename:IIS-Security >NUL
+	dism /online /disable-feature /featurename:IIS-URLAuthorization >NUL
+	dism /online /disable-feature /featurename:IIS-RequestFiltering >NUL
+	dism /online /disable-feature /featurename:IIS-IPSecurity >NUL
+	dism /online /disable-feature /featurename:IIS-Performance >NUL
+	dism /online /disable-feature /featurename:IIS-HttpCompressionDynamic >NUL
+	dism /online /disable-feature /featurename:IIS-WebServerManagementTools >NUL
+	dism /online /disable-feature /featurename:IIS-ManagementScriptingTools >NUL
+	dism /online /disable-feature /featurename:IIS-IIS6ManagementCompatibility >NUL
+	dism /online /disable-feature /featurename:IIS-Metabase >NUL
+	dism /online /disable-feature /featurename:IIS-HostableWebCore >NUL
+	dism /online /disable-feature /featurename:IIS-StaticContent >NUL
+	dism /online /disable-feature /featurename:IIS-DefaultDocument >NUL
+	dism /online /disable-feature /featurename:IIS-DirectoryBrowsing >NUL
+	dism /online /disable-feature /featurename:IIS-WebDAV >NUL
+	dism /online /disable-feature /featurename:IIS-WebSockets >NUL
+	dism /online /disable-feature /featurename:IIS-ApplicationInit >NUL
+	dism /online /disable-feature /featurename:IIS-ASPNET >NUL
+	dism /online /disable-feature /featurename:IIS-ASPNET45 >NUL
+	dism /online /disable-feature /featurename:IIS-ASP >NUL
+	dism /online /disable-feature /featurename:IIS-CGI >NUL
+	dism /online /disable-feature /featurename:IIS-ISAPIExtensions >NUL
+	dism /online /disable-feature /featurename:IIS-ISAPIFilter >NUL
+	dism /online /disable-feature /featurename:IIS-ServerSideIncludes >NUL
+	dism /online /disable-feature /featurename:IIS-CustomLogging >NUL
+	dism /online /disable-feature /featurename:IIS-BasicAuthentication >NUL
+	dism /online /disable-feature /featurename:IIS-HttpCompressionStatic >NUL
+	dism /online /disable-feature /featurename:IIS-ManagementConsole >NUL
+	dism /online /disable-feature /featurename:IIS-ManagementService >NUL
+	dism /online /disable-feature /featurename:IIS-WMICompatibility >NUL
+	dism /online /disable-feature /featurename:IIS-LegacyScripts >NUL
+	dism /online /disable-feature /featurename:IIS-LegacySnapIn >NUL
+	dism /online /disable-feature /featurename:IIS-FTPServer >NUL
+	dism /online /disable-feature /featurename:IIS-FTPSvc >NUL
+	dism /online /disable-feature /featurename:IIS-FTPExtensibility >NUL
+	dism /online /disable-feature /featurename:TFTP >NUL
+	dism /online /disable-feature /featurename:TelnetClient >NUL
+	dism /online /disable-feature /featurename:TelnetServer >NUL
+	echo Disabled unnecessary services
 	goto:eof

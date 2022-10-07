@@ -41,9 +41,13 @@ echo 5. User Management
 echo 6. Create new User
 echo 7. Firewall
 echo 8. Admin Accounts
+echo 9. Auditing
+echo 10. Services (AKA 0)
 REM ADD MORE LATER ---------------------------------------------------------
 
-CHOICE /c 12345678
+CHOICE /c 1234567890
+if %errorlevel% == 0 goto Ten
+if %errorlevel% == 9 goto Nine
 if %errorlevel% == 8 goto Eight
 if %errorlevel% == 7 goto Seven
 if %errorlevel% == 6 goto Six
@@ -265,5 +269,5 @@ if %errorLevel% == 1 goto One
 	dism /online /disable-feature /featurename:TFTP >NUL
 	dism /online /disable-feature /featurename:TelnetClient >NUL
 	dism /online /disable-feature /featurename:TelnetServer >NUL
-	echo Disabled unnecessary services
+	
 	goto:eof

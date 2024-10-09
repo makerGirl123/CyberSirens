@@ -225,6 +225,7 @@ if %errorLevel% == 1 goto One
 	if %newUsrChk%==y (
 		set /p userName2=What do you want to be the username?
 		set /p adminChk="Do you want this user to be an admin? (y/n)"
+	)
 	if %adminChk%==y (
 		net user "%userName2%" CyberPatriot2022! /add /passwordreq:yes >nul
 	) else (

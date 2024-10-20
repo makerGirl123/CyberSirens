@@ -39,7 +39,7 @@ echo 3. Password Policies
 echo 4. Disable Guest
 echo 5. User Management
 echo 6. Create new User
-echo 7. Firewall & Updates
+echo 7. Firewall and Updates
 echo 8. Services
 echo 9. Auditing
 REM ADD MORE LATER ---------------------------------------------------------
@@ -64,6 +64,8 @@ if %errorLevel% == 1 goto One
 	call :Five
 	call :Six
 	call :Seven
+	call :Eight
+	call :Nine
 	exit /b 
 
 :Two
@@ -223,7 +225,7 @@ if %errorLevel% == 1 goto One
 :Six
 	set /p newUsrChk="Do you want to create a new user? (y/n)"
 	if %newUsrChk%==y (
-		set /p userName2=What do you want to be the username?
+		set /p userName2="What do you want to be the username?"
 		set /p adminChk="Do you want this user to be an admin? (y/n)"
 	)
 	if %adminChk%==y (
